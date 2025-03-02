@@ -16,7 +16,7 @@ export class WssService {
     this.ws = new WebSocketServer({ server, path });
   }
 
-  public  get instance(): WssService {
+  public static get instance(): WssService {
     if (!WssService._instance) {
       throw new Error('WssService not initialized');
     }
@@ -25,6 +25,14 @@ export class WssService {
 
   public static initWss(options: Options) {
     WssService._instance = new WssService(options);
+  }
+
+  public sendMessages(type: string, payload: Object) {
+    this.ws.clients.forEach(client => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify({type, payload}));
+      }
+    });
   }
 
   public start() {

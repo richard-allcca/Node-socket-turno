@@ -32,8 +32,6 @@ export class TicketsController {
     const { desk } = req.params;
     const ticket = await this.ticketService.drawTicket(desk);
 
-    if (ticket.status === 404) return res.status(404).json(ticket);
-
     return res.json(ticket);
   };
 

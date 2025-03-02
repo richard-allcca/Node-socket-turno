@@ -2,6 +2,8 @@
 
 Este proyecto es una version nueva de colas para banco u otro similar
 
+> Permite la comunicación de webSocket mediante peticiones http tradicionales en un rest
+
 ## Instalación
 
 1. Clonar .env.template a .env y configurar las variables de entorno

@@ -3,6 +3,7 @@ import { envs } from './config/envs';
 import { AppRoutes } from './presentation/routes';
 import { Server } from './presentation/server';
 import { WssService } from './presentation/services/wss.service';
+import cors from 'cors';
 
 (async()=> {
   main();
@@ -14,6 +15,9 @@ function main() {
     port: envs.PORT,
     // routes: AppRoutes.routes,
   });
+
+  // Configuración de CORS
+  server.app.use(cors());
 
   // Crear un servidor HTTP utilizando la instancia del servidor de la aplicación
   const httpServer = createServer(server.app);

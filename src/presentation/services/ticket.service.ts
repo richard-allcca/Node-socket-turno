@@ -1,7 +1,12 @@
-import { UuiAdapter } from "../../config/uuid.adapter";
+ import { UuiAdapter } from "../../config/uuid.adapter";
 import { Ticket } from "../../domain/ticket";
+import { WssService } from "./wss.service";
 
 export class TicketService {
+
+	constructor(
+		private readonly wssService = WssService.instance,
+	) {}
 
 	// Obtener tickets pendientes
 	public get pendingTickets(): Ticket[] {
@@ -42,6 +47,7 @@ export class TicketService {
 		};
 
 		this._tickets.push(ticket);
+		this.onTicketNumberChanged();
 
 		return ticket;
 	}
@@ -52,13 +58,14 @@ export class TicketService {
 
 		if (!ticket) return { status: 404, message: 'No pending tickets' };
 
-		// Add ticket to working tickets
-		this.workingTickets.unshift(ticket);
-
 		if (ticket) {
 			ticket.handleAtDesk = desk;
 			ticket.handleAt = new Date();
 		}
+
+		// Add ticket to working tickets
+		this.workingTickets.unshift(ticket);
+		this.onTicketNumberChanged();
 
 		return { status: 200, ticket };
 	}
@@ -75,6 +82,10 @@ export class TicketService {
 		}
 
 		return { status: 200, ticket };
+	}
+
+	private onTicketNumberChanged() {
+		this.wssService.sendMessages('on-ticket-count-changed', this.pendingTickets.length);
 	}
 
 	// Lista de tickets
