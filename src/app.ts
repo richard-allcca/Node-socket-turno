@@ -12,7 +12,7 @@ function main() {
   // Crear una instancia del servidor de la aplicación
   const server = new Server({
     port: envs.PORT,
-    routes: AppRoutes.routes,
+    // routes: AppRoutes.routes,
   });
 
   // Crear un servidor HTTP utilizando la instancia del servidor de la aplicación
@@ -20,6 +20,9 @@ function main() {
 
   // Inicializar el servicio WebSocket con el servidor HTTP
   WssService.initWss({ server: httpServer });
+
+  // NOTE - Inicializar las rutas luego del servicio WebSocket
+  server.getServer(AppRoutes.routes);
 
   // Iniciar el servidor HTTP y escuchar en el puerto especificado
   httpServer.listen(envs.PORT, () => {

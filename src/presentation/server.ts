@@ -3,7 +3,7 @@ import path from 'path';
 
 interface Options {
   port: number;
-  routes: Router;
+  // routes: Router; // NOTE - Comentado para inicializar primero el server de wws en app.ts
   public_path?: string;
 }
 
@@ -14,16 +14,20 @@ export class Server {
   private serverListener?: any;
   private readonly port: number;
   private readonly publicPath: string;
-  private readonly routes: Router;
+  // private readonly routes: Router; // NOTE - Comentado para inicializar primero el server de wws en app.ts
 
   constructor(options: Options) {
-    const { port, routes, public_path = 'public' } = options;
+    const { port, public_path = 'public' } = options;
     this.port = port;
     this.publicPath = public_path;
-    this.routes = routes;
+    // this.routes = routes; // NOTE - Comentado para inicializar primero el server de wws en app.ts
 
     // Configuración del servidor al instanciar
     this.configure();
+  }
+
+  public getServer(router: Router) {
+    this.app.use(router);
   }
 
   private configure(){
@@ -35,7 +39,7 @@ export class Server {
     this.app.use( express.static( this.publicPath ) );
 
     //* Routes
-    this.app.use( this.routes );
+    // this.app.use( this.routes ); // NOTE -  Comentado para inicializar primero el server de wws en app.ts
 
     //* SPA /^\/(?!api).*/  <== Únicamente si no empieza con la palabra api
     this.app.get(/^\/(?!api).*/, (req, res) => {
