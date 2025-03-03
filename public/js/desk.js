@@ -6,11 +6,13 @@ const $btnFinishTicket = document.getElementById("btn-finish-ticket");
 const $lblWorking = document.getElementById("lbl-working");
 
 let escritorio = "";
+let currentWorkingTicketId = null;
 
 // Asignar escritorio obtenido del parámetro de la URL
 const searchParams = new URLSearchParams(window.location.search);
 
 escritorio = searchParams.get("ventanilla");
+
 
 if (isNaN(Number(escritorio)) ) {
   window.location = "index.html";
@@ -20,8 +22,15 @@ if (isNaN(Number(escritorio)) ) {
 $desk.innerText = "Escritorio " + escritorio;
 
 const checkCountTicketsPending = async (currentCountTicket = 0) => {
-	if (currentCountTicket > 0) $alert.classList.add("hidden");
-	if (currentCountTicket == 0) $alert.classList.remove("hidden");
+	if (currentCountTicket > 0) {
+		$alert.classList.add("hidden");
+		$btnNextTicket.disabled = false;
+	}
+
+	if (currentCountTicket === 0) {
+		$alert.classList.remove("hidden");
+		$btnNextTicket.disabled = true;
+	}
 	$lblPending.innerText = currentCountTicket;
 }
 
@@ -40,7 +49,22 @@ const getNextTicket = async () => {
 		return;
 	}
 
-	$lblWorking.innerText = `Atendiendo a ${ticket.number}`;
+	currentWorkingTicketId = ticket.id;
+
+	$lblWorking.innerText = `${ticket.number}`;
+}
+
+const finishTicket = async (ticket) => {
+	if (!ticket) return;
+
+	const { status } = await fetch(`/api/tickets/done/${ticket}`, {
+		method: "PUT",
+	}).then((data) => data.json());
+
+	if (status === 200) {
+		$lblWorking.innerText = "Nadie";
+		return;
+	}
 }
 
 // Función para conectar a WebSockets
@@ -72,9 +96,14 @@ function connectToWebSockets() {
 	};
 }
 
+// Listeners
 $btnNextTicket.addEventListener("click", async () => {
 
 	getNextTicket();
+});
+
+$btnFinishTicket.addEventListener("click", async () => {
+	finishTicket(currentWorkingTicketId);
 });
 
 getPendingTickets();
