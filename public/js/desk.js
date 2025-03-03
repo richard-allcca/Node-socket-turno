@@ -25,12 +25,15 @@ const checkCountTicketsPending = async (currentCountTicket = 0) => {
 	if (currentCountTicket > 0) {
 		$alert.classList.add("hidden");
 		$btnNextTicket.disabled = false;
+		// $lblPending.classList.remove("hidden");
 	}
 
 	if (currentCountTicket === 0) {
 		$alert.classList.remove("hidden");
 		$btnNextTicket.disabled = true;
+		// $lblPending.classList.add("hidden");
 	}
+
 	$lblPending.innerText = currentCountTicket;
 }
 
@@ -51,7 +54,7 @@ const getNextTicket = async () => {
 
 	currentWorkingTicketId = ticket.id;
 
-	$lblWorking.innerText = `${ticket.number}`;
+	$lblWorking.innerText = `- ticket ${ticket.number}`;
 }
 
 const finishTicket = async (ticket) => {
@@ -98,7 +101,7 @@ function connectToWebSockets() {
 
 // Listeners
 $btnNextTicket.addEventListener("click", async () => {
-
+	finishTicket(currentWorkingTicketId);
 	getNextTicket();
 });
 

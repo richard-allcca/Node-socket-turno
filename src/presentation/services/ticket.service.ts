@@ -24,12 +24,16 @@ export class TicketService {
 
 	// Obtener tickets en proceso
 	public get workingTickets(): Ticket[] {
-		return this._tickets.filter(ticket => ticket.handleAtDesk).splice(0, 4);
+		return this._tickets.filter(ticket => ticket.done !== true && ticket.handleAtDesk).splice(0, 4);
 	}
 
 	// Obtener los últimos tickets en proceso
 	public get lastWorkingTickets(): Ticket[] {
-		return this.workingTickets.splice(0, 4);
+		const tickets = this.workingTickets.slice(0, 4);
+		if (tickets.length > 0) {
+			return tickets;
+		}
+		return [];
 	}
 
 	// Obtener todos los tickets
@@ -89,7 +93,7 @@ export class TicketService {
 	}
 
 	// Lista de tickets
-	private readonly _tickets: Ticket[] = [
+	private _tickets: Ticket[] = [
 		{
 			id: UuiAdapter.v4(),
 			number: 1,
