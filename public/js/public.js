@@ -8,12 +8,17 @@ const $lblDesk2 = document.getElementById('lbl-desk-02');
 const $lblDesk3 = document.getElementById('lbl-desk-03');
 const $lblDesk4 = document.getElementById('lbl-desk-04');
 
+const getLatestTickets = async () => {
+	const tickets = await fetch('/api/tickets').then((data) => data.json());
+	return tickets;
+}
 
-const checkCountTicketsOnWorking = async (tickets) => {
+const checkCountTicketsOnWorking = async () => {
 	const ticketsOnWorking = await fetch('/api/tickets/working-on').then((data) => data.json());
-	console.log("🚀 ~ checkCountTicketsOnWorking ~ ticketsOnWorking:", ticketsOnWorking)
 
 	if (ticketsOnWorking.length === 0) return;
+
+	ticketsOnWorking.reverse();
 
 	for (let i = 0; i < ticketsOnWorking.length; i++) {
 		const ticket = ticketsOnWorking[ i ];
@@ -53,7 +58,7 @@ function connectToWebSockets() {
 		const data = JSON.parse(event.data);
 		if (data.type !== "on-ticket-count-changed") return null;
 
-		checkCountTicketsOnWorking(data.payload);
+		checkCountTicketsOnWorking();
 	};
 
 	socket.onclose = (event) => {
